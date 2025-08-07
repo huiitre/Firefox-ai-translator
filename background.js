@@ -1,4 +1,4 @@
-browser.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     
     if (message.action === 'saveSelectedText') {
         browser.storage.local.set({ 
@@ -38,60 +38,48 @@ browser.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 });
 
 async function translateWithClaude(text, targetLanguage) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'https://api.anthropic.com/v1/messages', true);
-        
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader('x-api-key', config.ANTHROPIC_API_KEY);
-        xhr.setRequestHeader('anthropic-version', '2023-06-01');
-        xhr.setRequestHeader('anthropic-dangerous-direct-browser-access', 'true');
-        
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                console.log('XHR Status:', xhr.status);
-                console.log('XHR Response:', xhr.responseText);
-                
-                if (xhr.status === 200) {
-                    try {
-                        const result = JSON.parse(xhr.responseText);
-                        if (result.content && result.content[0] && result.content[0].text) {
-                            resolve(result.content[0].text.trim());
-                        } else {
-                            reject(new Error('Format de réponse inattendu'));
-                        }
-                    } catch (error) {
-                        reject(new Error('Erreur parsing JSON: ' + error.message));
-                    }
-                } else {
-                    reject(new Error(`Erreur HTTP: ${xhr.status} - ${xhr.responseText}`));
-                }
-            }
-        };
-        
-        xhr.onerror = function() {
-            reject(new Error('Erreur réseau'));
-        };
-        
-        const payload = JSON.stringify({
-            model: config.MODEL,
-            max_tokens: config.MAX_TOKENS,
-            messages: [{
-                role: 'user',
-                content: `Traduis ce texte en ${targetLanguage}. Réponds UNIQUEMENT avec la traduction, sans explication :\n\n${text}`
-            }]
+    try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': config.ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify({
+                model: config.MODEL,
+                max_tokens: config.MAX_TOKENS,
+                messages: [{
+                    role: 'user',
+                    content: `Traduis ce texte en ${targetLanguage}. Réponds UNIQUEMENT avec la traduction, sans explication :\n\n${text}`
+                }]
+            })
         });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
         
-        xhr.send(payload);
-    });
+        if (result.content && result.content[0] && result.content[0].text) {
+            return result.content[0].text.trim();
+        } else {
+            throw new Error('Format de réponse inattendu');
+        }
+    } catch (error) {
+        console.error('Erreur fetch:', error);
+        throw error;
+    }
 }
 
-browser.runtime.onInstalled.addListener(function(details) {
+browser.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
         console.log('AI Translator extension installée');
     }
 });
 
-browser.browserAction.onClicked.addListener(function(tab) {
+browser.browserAction.onClicked.addListener((tab) => {
     console.log('Browser action clicked');
 });

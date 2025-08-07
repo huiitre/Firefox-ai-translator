@@ -24,3 +24,8 @@ create_icons.html
 *.key
 *.pem
 *.p12
+
+# Fichiers de build
+*.xpi
+*.zip
+build/
