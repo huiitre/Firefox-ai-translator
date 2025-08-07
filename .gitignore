@@ -1,0 +1,26 @@
+# Configuration avec clés API sensibles
+config.js
+
+# Fichiers temporaires
+*.tmp
+*.temp
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers de développement
+node_modules/
+*.log
+test.js
+
+# Fichiers Python générés
+__pycache__/
+*.pyc
+create_icons.py
+create_icons.html
+
+# Autres fichiers sensibles
+*.key
+*.pem
+*.p12

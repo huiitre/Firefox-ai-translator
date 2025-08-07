@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AI Translator</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Translator</h1>
+        </div>
+        
+        <div class="translation-area">
+            <div class="input-group">
+                <label for="sourceText">Texte à traduire:</label>
+                <textarea id="sourceText" placeholder="Entrez le texte à traduire..."></textarea>
+            </div>
+            
+            <div class="input-group">
+                <div class="language-selector">
+                    <label for="targetLang">Traduire vers :</label>
+                    <select id="targetLang">
+                        <option value="français">Français</option>
+                        <option value="anglais" selected>Anglais</option>
+                        <option value="espagnol">Espagnol</option>
+                        <option value="italien">Italien</option>
+                        <option value="allemand">Allemand</option>
+                        <option value="portugais">Portugais</option>
+                        <option value="russe">Russe</option>
+                        <option value="chinois">Chinois</option>
+                        <option value="japonais">Japonais</option>
+                        <option value="coréen">Coréen</option>
+                        <option value="arabe">Arabe</option>
+                    </select>
+                </div>
+                <textarea id="targetText" placeholder="La traduction apparaîtra ici..." readonly></textarea>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button id="translateBtn" class="translate-button">Traduire</button>
+            <button id="clearBtn" class="clear-button">Effacer</button>
+        </div>
+        
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <span>Traduction en cours...</span>
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
